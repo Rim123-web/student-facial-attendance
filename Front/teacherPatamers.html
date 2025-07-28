@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Parameters</title>
+  <link rel="stylesheet" href="teacherPatamers.css"> <!-- or add style below -->
+</head>
+<body>
+  <div class="card-container">
+    <div class="card">
+      <h2>Teacher Information</h2>
+      <p><strong>Name:</strong> <span id="teacherName">Loading...</span></p>
+      <p><strong>Email:</strong> <span id="teacherEmail">Loading...</span></p>
+      <div class="button-group">
+  <a href="teacherupdate.html" class="button-link">Update</a>
+  <a href="teacherDashboard.html" class="button-link">Home</a>
+</div>
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const teacherId = localStorage.getItem("teacherId");
+
+      fetch(`http://127.0.0.1:8000/api/teacher/${teacherId}/info/`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("teacherName").textContent = data.name;
+          document.getElementById("teacherEmail").textContent = data.email;
+        })
+        .catch(error => {
+          console.error("Error fetching teacher data:", error);
+        });
+    });
+  </script>
+</body>
+</html>

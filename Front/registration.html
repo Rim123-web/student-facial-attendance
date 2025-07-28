@@ -1,0 +1,102 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Registration Form </title>
+  <link rel="stylesheet" href="registration.css">
+</head>
+<body>
+
+  <div class="registration-container">
+    <h2>Create Your Account</h2>
+    <form class="registration-form" id="registrationForm" method="POST">
+      <input type="text" name="fullname" id="fullname" placeholder="Full Name" required />
+
+      <select name="education_level" id="education_level" required>
+        <option value="" disabled selected>Education Level</option>
+        <option value="FY">First Year</option>
+        <option value="SY">Second Year</option>
+        <option value="BA">Bachelor - 1st Year</option>
+        <option value="FYM">Master - 1st Year</option>
+        <option value="SYM">Master - Last Year</option>
+      </select>
+
+      <select name="major"  id="major">
+        <option value="" disabled selected>Select Major</option>
+        <option value="Engineering">Engineering</option>
+        <option value="Economics">Economics</option>
+        <option value="Law">Law</option>
+        <option value="Politics">Politics</option>
+        <option value="Medicine">Medicine</option>
+        <option value="Aviation">Aviation</option>
+      </select>
+
+      <input type="email" name="email" id="email" placeholder="Email Address" required />
+     
+      <input type="password" name="password" id="password" placeholder="Password" required />
+      <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required />
+      <input type="file" id="face_image" accept="image/*" required />
+
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="login-student.html">Sign in</a>
+    </div>
+  </div><br><br><br>
+
+
+
+  <script>
+document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const full_name = document.getElementById('fullname').value;
+  const education_level = document.getElementById('education_level').value;
+  const major = document.getElementById('major').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const confirm_password = document.getElementById('confirm_password').value;
+  const face_image = document.getElementById('face_image').files[0];
+
+  if (password !== confirm_password) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('full_name', full_name);
+  formData.append('education_level', education_level);
+  formData.append('major', major);
+  formData.append('email', email);
+  formData.append('password', password);
+  formData.append('face_image', face_image);
+
+  try {
+    const response = await fetch('http://localhost:8000/student/signup/', {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert(result.message || "Registered successfully!");
+    } else {
+      console.error(result);
+      alert("Registration failed: " + JSON.stringify(result));
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("An error occurred.");
+  }
+});
+</script>
+
+</body>
+</html>

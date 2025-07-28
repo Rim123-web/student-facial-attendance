@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="studentDashboard.css">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="logo">EduFace</div>
+    <ul>
+      <li class="dropdown">
+        <a onclick="toggleDropdown()">Classes ▼</a>
+        <div class="dropdown-content" id="classDropdown"></div>
+      </li>
+      <li><a href="studentParameters.html">Parameters</a></li>
+      <li><a href="Archive.html">Archive</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <h1>Hello, Student 👋</h1>
+    <p>Welcome to your dashboard.</p>
+    <p>To mark your attendance, please select a class from the dropdown above.</p>
+    <p>Once selected, you’ll be able to start face verification and record your presence.</p>
+
+    <div class="features">
+      <div class="feature-box">
+        <h3>🎥 Face Recognition</h3>
+        <p>Securely check in with a quick face scan.</p>
+      </div>
+      <div class="feature-box">
+        <h3>📚 Class Specific</h3>
+        <p>Only see classes related to your major.</p>
+      </div>
+      <div class="feature-box">
+        <h3>📈 Attendance Tracking</h3>
+        <p>See your past attendance anytime.</p>
+      </div>
+    </div>
+
+    <div id="videoCaptureSection" style="display:none;">
+      <h3>Marking presence for: <span id="selectedClassName"></span></h3>
+      <h5>Click on 'P' after 2 sec to stop the video capture!</h5>
+      <button id="captureBtn" onclick="startCapture()">Start Video Capture</button>
+    </div>
+  </section>
+
+
+
+  <button id="logoutBtn">Logout</button>
+  <script>
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/student/logout/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // If you use CSRF token, add it here
+          },
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.status === 'success') {
+
+          window.location.href = 'home.html';
+          alert('Logged out successfully!');  // Redirect to login page after logout
+        } else {
+          alert('Logout failed: ' + (result.message || 'Unknown error'));
+        }
+      } catch (error) {
+        alert('An error occurred while logging out');
+        console.error(error);
+      }
+    });
+
+
+
+
+
+
+
+
+    // Get the logged-in student's ID (you can adjust how you store it)
+    const studentId = localStorage.getItem("studentId");
+
+    async function loadClassesForStudent() {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/classes/${studentId}/`);
+        const data = await response.json();
+
+        const dropdown = document.getElementById("classDropdown");
+        dropdown.innerHTML = "";  // Clear old content
+
+        if (data.status === "success" && data.classes.length > 0) {
+          data.classes.forEach(cls => {
+            const btn = document.createElement("button");
+            btn.textContent = cls.name + " (" + cls.major + ")";
+            btn.onclick = () => {
+              window.selectedClassId = cls.id;  // <-- Store the class ID!
+              selectClass(cls.name);
+            };
+            dropdown.appendChild(btn);
+          });
+
+        } else {
+          dropdown.innerHTML = "<p>No classes found for your major.</p>";
+        }
+      } catch (error) {
+        console.error("Error loading classes:", error);
+      }
+    }
+
+    function toggleDropdown() {
+      const dropdown = document.getElementById("classDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+    function selectClass(className) {
+      document.getElementById("selectedClassName").textContent = className;
+      document.getElementById("videoCaptureSection").style.display = "block";
+    }
+
+    window.onload = () => {
+      loadClassesForStudent();
+
+      // Close dropdown when clicking outside
+      window.addEventListener("click", function (e) {
+        if (!e.target.matches('.dropdown a')) {
+          document.getElementById("classDropdown").style.display = "none";
+        }
+      });
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    let videoStream;
+    const videoElement = document.createElement('video');
+    videoElement.style.width = '320px';
+    videoElement.style.height = '240px';
+
+    const captureBtn = document.getElementById('captureBtn');
+    const selectedClassNameSpan = document.getElementById('selectedClassName');
+
+    // When the user clicks "Start Video Capture"
+    async function startCapture() {
+      try {
+        // Ask for camera permission & start video
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        videoElement.srcObject = videoStream;
+        videoElement.play();
+
+        // Show the video element somewhere in the page (append it)
+        const container = document.getElementById('videoCaptureSection');
+        container.appendChild(videoElement);
+
+        // Change button text to "Capture Attendance"
+        captureBtn.textContent = "Capture Attendance";
+        captureBtn.onclick = captureAndSend;
+
+      } catch (err) {
+        alert("Could not access webcam: " + err.message);
+      }
+    }
+
+    // When the user clicks "Capture Attendance"
+    async function captureAndSend() {
+      if (!videoStream) return alert("Video not started!");
+
+      // Create a canvas to capture a frame from video
+      const canvas = document.createElement('canvas');
+      canvas.width = videoElement.videoWidth || 320;
+      canvas.height = videoElement.videoHeight || 240;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      // Get base64 image data from canvas
+      const imageData = canvas.toDataURL('image/jpeg');
+
+      // Stop the video stream after capture
+      videoStream.getTracks().forEach(track => track.stop());
+
+      // Remove video element from DOM
+      videoElement.remove();
+
+      captureBtn.disabled = true;  // prevent double submit
+
+      // Prepare form data to send
+      const formData = new FormData();
+      const studentId = localStorage.getItem("studentId"); // you should have stored this on login
+      const className = selectedClassNameSpan.textContent;
+
+      // We need the class ID corresponding to this className
+      // Assuming you saved it somewhere in JS, otherwise you must store ID on button click
+      // For demo, let's assume classId is stored in a global variable selectedClassId
+      if (!window.selectedClassId) {
+        alert("Class not selected properly!");
+        return;
+      }
+
+      formData.append('student_id', studentId);
+      formData.append('class_id', window.selectedClassId); // UUID of the class
+      formData.append('image', imageData);
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/verify-attendance/', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+
+        if (response.ok && result.status === 'success') {
+          alert('Attendance marked as present!');
+        } else {
+          alert('Attendance failed: ' + (result.message || result.error));
+        }
+      } catch (error) {
+        alert('Error sending attendance: ' + error.message);
+      } finally {
+        captureBtn.disabled = false;
+        captureBtn.textContent = "Start Video Capture";
+        captureBtn.onclick = startCapture;
+      }
+    }
+
+document.addEventListener('keydown', async function(event) {
+  if ((event.key === 'p' || event.key === 'P') && videoStream) {
+    await captureAndSend(); // send attendance and stop video
+  }
+});
+
+
+  </script>
+</body>
+
+</html>

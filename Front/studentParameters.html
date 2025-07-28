@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="studentParameters.css">
+    <title>Document</title>
+</head>
+<body>
+
+    
+      <!-- <div class="profile-card">
+    <div class="profile-image">
+      <img id="student-image" src="" alt="Profile Image">
+    </div>
+    <div class="profile-info">
+      <h2 id="student-name">Full Name</h2>
+      <p><strong>Email:</strong> <span id="student-email"></span></p>
+      <p><strong>Major:</strong> <span id="student-major"></span></p>
+      <p><strong>Education Level:</strong> <span id="student-education"></span></p>
+    </div>
+  </div> -->
+
+
+
+  <div class="profile-card">
+  <div class="profile-image">
+    <img id="student-image" src="" alt="Profile Image">
+  </div>
+  <div class="profile-info">
+    <h2 id="student-name">Full Name</h2>
+    <p><strong>Email:</strong> <span id="student-email"></span></p>
+    <p><strong>Major:</strong> <span id="student-major"></span></p>
+    <p><strong>Education Level:</strong> <span id="student-education"></span></p><br>
+  <button id="update-btn"><a href="studentUpdate.html">Update Info</a></button>
+
+
+    <a href="studentDashboard.html">Student Home?</a>
+  </div>
+
+
+    
+
+  <script>
+
+  const studentId = localStorage.getItem("studentId"); // ✅ get from localStorage
+
+  if (!studentId) {
+    alert("Student ID not found. Please login again.");
+    window.location.href = "/login.html"; // or wherever your login page is
+  }
+
+  const apiUrl = `http://127.0.0.1:8000/students/parameters/${studentId}/`;
+
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) throw new Error("Student not found");
+      return response.json();
+    })
+    .then(data => {
+      document.getElementById('student-name').textContent = data.full_name;
+      document.getElementById('student-email').textContent = data.email;
+      document.getElementById('student-major').textContent = data.major;
+      document.getElementById('student-education').textContent = data.education_level;
+      document.getElementById('student-image').src = `http://127.0.0.1:8000${data.face_image}`;
+    })
+    .catch(error => {
+      console.error('Error fetching student info:', error);
+    });
+
+
+
+    
+  </script>
+</body>
+</html>

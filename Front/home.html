@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Responsive Navbar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="home.css">
+  <!-- Font Awesome Link for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+</head>
+
+<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responsive Navbar</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">EduFace</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#">Home</a></li>
+      <li class="dropdown">
+        <a href="#">Login ▾</a>
+        <ul class="dropdown-menu">
+          <li><a href="login-teacher.html">Teacher</a></li>
+          <li><a href="login-student.html">Student</a></li>
+        </ul>
+      </li>
+      <li><a href="registration.html">Register</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="burger" onclick="toggleMenu()">
+      <div class="line1"></div>
+      <div class="line2"></div>
+      <div class="line3"></div>
+    </div>
+  </nav>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      nav.classList.toggle('nav-active');
+    }
+  </script>
+</body>
+</html>
+
+
+  <!-- Section for image -->
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">EduFace</h1>
+    <p class="hero-subtitle">Smart, secure, and effortless attendance with facial recognition.</p>
+
+    <ul class="features">
+      <li><i class="fas fa-user-check"></i> Real-time student check-in</li>
+      <li><i class="fas fa-shield-alt"></i> Secure face authentication</li>
+      <li><i class="fas fa-chart-line"></i> Automated attendance reports</li>
+    </ul>
+
+    <button class="hero-btn" onclick="showPopup()">Learn More</button>
+  </div>
+</section>
+
+<!-- Pop-up -->
+<div id="popup" class="popup">
+  <div class="popup-content">
+    <span class="close-btn" onclick="closePopup()">&times;</span>
+    <h2>How EduFace Works</h2>
+    <p>EduFace uses advanced facial recognition to track student attendance in real-time, eliminating manual efforts and errors. With our dashboard, teachers can access reports instantly and securely.</p>
+  </div>
+</div>
+
+
+<!-- Image slider part -->
+
+<!-- Vertical separator + Slider Container -->
+<div class="text-section">
+  <h2>Visual Inspiration</h2>
+  <p>Here are some of our pictures to help you understand more about what we do.</p>
+</div>
+
+ <div class="slider-container">
+    <div class="slider" id="slider">
+      <img src="imageSlider/image2.jpg" alt="Slide 1" />
+      <img src="imageSlider/image1.jpg" alt="Slide 2" />
+      <img src="imageSlider/image3.jpg" alt="Slide 3" />
+    </div>
+    <button class="prev" onclick="moveSlide(-1)">❮</button>
+    <button class="next" onclick="moveSlide(1)">❯</button>
+  </div>
+
+
+<br><br>
+
+<!-- Ceo part -->
+
+<!-- <section class="ceo-section">
+  <div class="ceo-container">
+    <img src="Ceo_img.jpeg" alt="CEO Image" class="ceo-image" />
+    <div class="ceo-info">
+      <h2>Meet Our CEO</h2>
+      <h3>Rim Gourram</h3>
+      <p>
+        Rim Gourram is the visionary behind EduFace, leading with passion and innovation. 
+        With a background in AI and education, she is committed to building smarter learning experiences for all.
+      </p>
+    </div>
+  </div>
+</section> -->
+
+
+<!-- Contact us part -->
+
+<section  id="contact"  class="contact-section">
+  <h2>Contact Us</h2>
+  <p>We'd love to hear from you. Please fill out the form below.</p>
+  <form class="contact-form" action="#" id="contactForm" method="POST">
+    <input type="text" name="name" id="name" placeholder="Your Name" required>
+    <input type="email" name="email" id="email" placeholder="Your Email" required>
+ 
+    <textarea name="message" rows="5" id="message" placeholder="Your Message" required></textarea>
+    <button type="submit">Send Message</button>
+    <p id="contactMessage" style="color: green; margin-top: 10px;"></p>
+  </form>
+</section>
+
+<!-- Footer part -->
+
+   <footer class="footer">
+  <div class="footer-container">
+    <div class="footer-logo">
+      <h2>EduFace</h2>
+      <p>Smart Attendance with Face Recognition</p>
+      <p>by Rim Gourram</p>
+    </div>
+
+    <div class="footer-social">
+      <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+    </div>
+
+    <div class="footer-links">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Features</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 EduFace. All rights reserved.</p>
+  </div>
+</footer>
+
+
+
+
+
+<script>
+    //     const modal = document.getElementById("popupModal");
+
+    // function openModal() {
+    //   modal.style.display = "block";
+    // }
+
+    // function closeModal() {
+    //   modal.style.display = "none";
+    // }
+
+    // // Close modal if user clicks outside content
+    // window.onclick = function(event) {
+    //   if (event.target == modal) {
+    //     closeModal();
+    //   }
+    // }
+
+  function showPopup() {
+    document.getElementById("popup").style.display = "flex";
+  }
+
+  function closePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+
+let currentIndex = 0;
+
+function moveSlide(direction) {
+  const slider = document.getElementById("slider");
+  const slides = slider.querySelectorAll("img");
+  const totalSlides = slides.length;
+
+  currentIndex = (currentIndex + direction + totalSlides) % totalSlides;
+  slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+}
+
+ 
+
+document.getElementById('contactForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const form = event.target;
+
+  const formData = {
+    name: form.name.value,
+    email: form.email.value,
+    message: form.message.value
+  };
+
+  try {
+    const response = await fetch('http://localhost:8000/api/contact/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      alert('Your message has been successfully sent!');
+      form.reset();
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message || 'Failed to send message.');
+    }
+  } catch (error) {
+    alert('An error occurred. Please try again later.');
+    console.error('Error:', error);
+  }
+});
+
+
+ 
+</script>
+
+
+
+
+</body>
+
+</html>

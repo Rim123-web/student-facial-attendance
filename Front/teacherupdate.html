@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Update Teacher</title>
+    <link rel="stylesheet" href="teacherUpdate.css" />
+</head>
+
+<body>
+    <div class="card-container">
+        <div class="card">
+            <h2>Update Information</h2>
+            <form id="updateForm">
+                <label>Name:</label>
+                <input type="text" id="name" required />
+
+                <label>Email:</label>
+                <input type="email" id="email" required />
+
+                <label>Password (leave empty if unchanged):</label>
+                <input type="password" id="password" name="password" />
+
+                <button type="submit">Update</button><br>
+                <a href="teacherDashboard.html">Home?</a>
+
+
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const teacherId = localStorage.getItem("teacherId");
+
+            fetch(`http://127.0.0.1:8000/api/teacher/${teacherId}/info/`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("name").value = data.name;
+                    document.getElementById("email").value = data.email;
+                });
+
+            document.getElementById("updateForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const updatedData = {
+                    name: document.getElementById("name").value,
+                    email: document.getElementById("email").value,
+                    password: document.getElementById("password").value,
+                };
+
+                const payload = {
+                    name: updatedData.name,
+                    email: updatedData.email,
+                };
+
+                if (updatedData.password && updatedData.password.trim()) {
+                    payload.password = updatedData.password;
+                }
+
+                fetch(`http://127.0.0.1:8000/api/teacher/${teacherId}/update/`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                })
+                    .then(async (res) => {
+                        if (!res.ok) {
+                            const errorData = await res.json();
+                            console.error("Update error details:", errorData);
+                            throw new Error("Update failed");
+                        }
+                        return res.json();
+                    })
+                    .then((data) => {
+                        alert("Update successful!");
+                    })
+
+                    .catch((err) => {
+                        document.getElementById("msg").textContent = "Error updating data.";
+                        console.error(err);
+                    });
+            });
+
+        });
+    </script>
+</body>
+
+</html>

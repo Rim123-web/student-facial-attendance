@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="teacherDashboard.css" />
+  </head>
+
+  <body>
+    <header>
+      <div class="logo">EduFace</div>
+      <nav>
+        <ul>
+          <li>
+            <select id="classDropdown" class="class-dropdown">
+              <option value="">Select a class</option>
+            </select>
+          </li>
+
+          <li><a href="teacherPatamers.html">Parameters</a></li>
+
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <h1>Hello, Teacher 👩‍🏫</h1>
+      <p>Welcome to your dashboard. You can review student attendance by date and update your personal information in the parameters section.</p>
+
+      <div class="card-container">
+        <div class="card">
+           <h3>⚙️ Manage Profile</h3>
+  <p>Update your personal teaching information and settings.</p>
+        </div>
+        <div class="card">
+          <h3>👨‍🎓 View Students</h3>
+          <p>Filter student attendance records by date.</p>
+        </div>
+        <div class="card">
+          <h3>📊 Review Attendance</h3>
+          <p>Track and review student attendance history.</p>
+        </div>
+      </div>
+   
+<div id="dateFilterContainer" style="display: none; margin-top: 10px;">
+  <label for="dateFilter">Filter by Date:</label>
+  <input type="date" id="dateFilter">
+</div>
+
+      <div id="classTableContainer"></div>
+
+    </main>
+  </body>
+
+  </html>
+
+  <button id="teacherLogoutBtn">Logout</button>
+  <script>
+    document.getElementById('teacherLogoutBtn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/teacher/logout/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Add CSRF token here if you use CSRF protection
+          },
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.status === 'success') {
+          alert('Logged out successfully!');
+          window.location.href = 'home.html';  // Redirect to teacher login page
+        } else {
+          alert('Logout failed: ' + (result.message || 'Unknown error'));
+        }
+      } catch (error) {
+        alert('An error occurred while logging out');
+        console.error(error);
+      }
+    });
+
+
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const teacherId = localStorage.getItem("teacherId");
+      console.log("teacherId from localStorage:", teacherId);
+
+      if (!teacherId || teacherId === "undefined") {
+        alert("No valid teacher ID found. Please log in again.");
+        window.location.href = "login-teacher.html";
+        return;
+      }
+
+      fetch(`http://localhost:8000/api/teacher/${teacherId}/classes/`)
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to fetch classes");
+          return response.json();
+        })
+        .then(data => {
+          const dropdown = document.getElementById("classDropdown");
+          data.forEach(cls => {
+            const option = document.createElement("option");
+            option.value = cls.id;
+            option.textContent = `${cls.name} (${cls.major})`;
+            dropdown.appendChild(option);
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching classes:", error);
+          alert("Could not load class data.");
+        });
+    });
+
+
+
+document.getElementById("classDropdown").addEventListener("change", function () {
+  const classId = this.value;
+  if (!classId) return;
+
+  console.log("Selected classId:", classId);
+
+  fetch(`http://127.0.0.1:8000/api/class/${classId}/students/`)
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to fetch student data");
+      return response.json();
+    })
+    .then(data => {
+      const tableContainer = document.getElementById("classTableContainer");
+      tableContainer.innerHTML = ""; // Clear previous
+
+      const dateFilterContainer = document.getElementById("dateFilterContainer");
+      const dateFilterInput = document.getElementById("dateFilter");
+
+      // Show the date filter input
+      dateFilterContainer.style.display = "block";
+      dateFilterInput.value = "";
+
+      if (data.length === 0) {
+        tableContainer.textContent = "No students found for this class.";
+        return;
+      }
+
+      const table = document.createElement("table");
+      table.classList.add("student-table");
+
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr>
+          <th>Student Name</th>
+          <th>Major</th>
+          <th>Class</th>
+          <th>Date</th>
+          <th>Attendance</th>
+        </tr>
+      `;
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      data.forEach(student => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${student.student_name}</td>
+          <td>${student.major}</td>
+          <td>${student.class_name}</td>
+          <td class="attendance-date">${student.date}</td>
+          <td>${student.is_present ? "Present" : "Absent"}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(tbody);
+      tableContainer.appendChild(table);
+
+      // Filter by date
+      dateFilterInput.addEventListener("input", function () {
+        const filterDate = this.value;
+        const rows = tbody.querySelectorAll("tr");
+        let visibleRows = 0;
+
+        rows.forEach(row => {
+          const dateCell = row.querySelector(".attendance-date");
+          if (dateCell.textContent === filterDate || filterDate === "") {
+            row.style.display = "";
+            visibleRows++;
+          } else {
+            row.style.display = "none";
+          }
+        });
+
+        let noMatchMsg = document.getElementById("noMatchMessage");
+        if (!noMatchMsg) {
+          noMatchMsg = document.createElement("div");
+          noMatchMsg.id = "noMatchMessage";
+          noMatchMsg.style.color = "red";
+          noMatchMsg.style.marginTop = "10px";
+          tableContainer.appendChild(noMatchMsg);
+        }
+
+        if (visibleRows === 0 && filterDate !== "") {
+          noMatchMsg.textContent = "No matching records found.";
+        } else {
+          noMatchMsg.textContent = "";
+        }
+      });
+    })
+    .catch(error => {
+      console.error("Error loading student data:", error);
+      alert("Failed to load student data.");
+    });
+});
+
+
+
+
+  </script>
+</body>
+
+</html>

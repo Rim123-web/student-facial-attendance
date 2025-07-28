@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- Coding by CodingNepal | www.codingnepalweb.com-->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8">
+    <title> Login and Registration Form in HTML & CSS | CodingLab </title>
+    <link rel="stylesheet" href="Login.css">
+    <!-- Fontawesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+<body>
+
+
+    
+  <div class="container">
+    <input type="checkbox" id="flip">
+    <div class="cover">
+      <div class="front">
+        <img src="imageSlider/image1.jpg" alt="">
+        <div class="text">
+          <span class="text-1">Empowering education, together <br> </span>
+          <span class="text-2">Your dashboard awaits</span>
+        </div>
+      </div>
+      <div class="back">
+        <!--<img class="backImg" src="images/backImg.jpg" alt="">-->
+        <div class="text">
+          <span class="text-1">Complete miles of journey <br> with one step</span>
+          <span class="text-2">Let's get started</span>
+        </div>
+      </div>
+    </div>
+    <div class="forms">
+        <div class="form-content">
+          <div class="login-form">
+            <div class="title">Login Teacher</div>
+          <form action="#" id="teacher-login-form">
+            <div class="input-boxes">
+              <div class="input-box">
+                <i class="fas fa-envelope"></i>
+                <input type="text" id="teacher-email" placeholder="Enter your email" required>
+              </div>
+              <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="teacher-password" placeholder="Enter your password" required>
+              </div>
+              <div class="text"><a href="home.html">Home?</a></div>
+              <div class="button input-box">
+                <input type="submit" value="Sumbit">
+              </div>
+              <p id="teacher-login-error" style="color: red; text-align: center; margin-top: 10px;"></p>
+              <!-- <div class="text sign-up-text">Don't have an account? <label for="flip">Sigup now</label></div> -->
+            </div>
+        </form>
+      </div>
+       
+      </form>
+    </div>
+    </div>
+    </div>
+  </div>
+ <script>
+
+  document.getElementById('teacher-login-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  // These must be declared inside the event handler so they exist when used
+  const email = document.getElementById('teacher-email').value;
+  const password = document.getElementById('teacher-password').value;
+
+  // Now you can use email and password safely here
+  fetch('http://127.0.0.1:8000/teacher/login/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  })
+  .then(async response => {
+    const data = await response.json();
+    console.log('Login response data:', data);
+
+    if (response.ok) {
+      if (data.id) {
+        localStorage.setItem('teacherId', data.id);
+        window.location.href = 'teacherDashboard.html';
+      } else {
+        alert("Login succeeded but no teacher ID returned.");
+      }
+    } else {
+      document.getElementById('teacher-login-error').textContent = data.error || 'Invalid email or password.';
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    document.getElementById('teacher-login-error').textContent = 'An error occurred. Please try again.';
+  });
+});
+
+    // document.getElementById('teacher-login-form').addEventListener('submit', function(e) {
+    //   e.preventDefault();
+
+    //   const email = document.getElementById('teacher-email').value;
+    //   const password = document.getElementById('teacher-password').value;
+    //   const errorDiv = document.getElementById('teacher-login-error');
+    //   errorDiv.textContent = ''; // Clear previous message
+
+    //   fetch('http://127.0.0.1:8000/teacher/login/', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'X-CSRFToken': getCSRFToken(), // Only if needed
+    //     },
+    //     body: JSON.stringify({ email, password })
+    //   })
+    //   .then(async response => {
+    //     const data = await response.json();
+    //     if (response.ok) {
+    //       window.open('teacherDashboard.html', '_blank');
+    //     } else {
+    //       errorDiv.textContent = data.error || 'Invalid email or password.';
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error);
+    //     errorDiv.textContent = 'An error occurred. Please try again.';
+    //   });
+
+    //   function getCSRFToken() {
+    //     let cookieValue = null;
+    //     const cookies = document.cookie.split(';');
+    //     for (let i = 0; i < cookies.length; i++) {
+    //       const cookie = cookies[i].trim();
+    //       if (cookie.startsWith('csrftoken=')) {
+    //         cookieValue = decodeURIComponent(cookie.substring('csrftoken='.length));
+    //         break;
+    //       }
+    //     }
+    //     return cookieValue;
+    //   }
+    // });
+  </script>
+
+</body>
+</html>

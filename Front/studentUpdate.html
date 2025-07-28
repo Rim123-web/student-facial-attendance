@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Student</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f2f2f2, #e6f0ff);
+    padding: 60px 20px;
+    margin: 0;
+  }
+
+  .form-container {
+    background: #fff;
+    padding: 40px;
+    max-width: 600px;
+    margin: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+  }
+
+  label {
+    display: block;
+    margin: 15px 0 6px;
+    color: #444;
+    font-weight: 500;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fafafa;
+    font-size: 15px;
+    transition: border 0.3s ease;
+  }
+
+  input:focus,
+  select:focus {
+    border-color: #4a90e2;
+    outline: none;
+  }
+
+  input[type="file"] {
+    padding: 10px 0;
+  }
+
+  img {
+    display: block;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    margin-top: 10px;
+  }
+
+  button {
+    margin-top: 30px;
+    padding: 14px;
+    width: 100%;
+    background-color: #4a90e2;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #357ABD;
+  }
+</style>
+
+</head>
+<body>
+  <div class="form-container">
+    <h2>Update Student</h2>
+    <form id="updateForm" enctype="multipart/form-data">
+      <label>Full Name</label>
+      <input type="text" id="full_name" name="full_name" required>
+
+      <label>Email</label>
+      <input type="email" id="email" name="email" required>
+
+      <label>Major</label>
+      <select id="major" name="major">
+        <option value="Engineering">Engineering</option>
+        <option value="Economics">Economics</option>
+        <option value="Law">Law</option>
+        <option value="Politics">Politics</option>
+        <option value="Medicine">Medicine</option>
+        <option value="Aviation">Aviation</option>
+      </select>
+
+      <label>Education Level</label>
+      <select id="education_level" name="education_level">
+        <option value="FY">First Year</option>
+        <option value="SY">Second Year</option>
+        <option value="BA">Bachelor</option>
+        <option value="FYM">First Year Master's</option>
+        <option value="SYM">Second Year Master's</option>
+        <option value="OTHER">Other</option>
+      </select>
+
+      <label>Password</label>
+      <input type="password" id="password" name="password">
+
+      <label>Face Image</label>
+      <input type="file" id="face_image" name="face_image">
+      <img id="currentImage" src="" alt="Current Face">
+
+      <button type="submit">Update</button><br><br><br>
+      <a href="studentDashboard.html">Student Home?</a>
+    </form>
+  </div>
+
+  <script>
+
+const studentId = localStorage.getItem("studentId");
+const updateUrl = `http://127.0.0.1:8000/students/update/${studentId}/`;
+
+// Fetch current data to prefill the form
+fetch(`http://127.0.0.1:8000/students/parameters/${studentId}/`)
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById("full_name").value = data.full_name;
+    document.getElementById("email").value = data.email;
+    document.getElementById("education_level").value = data.education_level;
+    document.getElementById("major").value = data.major;
+    document.getElementById("currentImage").src = `http://127.0.0.1:8000${data.face_image}`;
+    // Don't prefill password for security
+  });
+
+// Handle form submission
+document.getElementById("updateForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.append("full_name", document.getElementById("full_name").value);
+  formData.append("email", document.getElementById("email").value);
+  formData.append("education_level", document.getElementById("education_level").value);
+  formData.append("major", document.getElementById("major").value);
+
+  const password = document.getElementById("password").value;
+  if (password) {
+    formData.append("password", password); // only if entered
+  }
+
+  const imageFile = document.getElementById("face_image").files[0];
+  if (imageFile) {
+    formData.append("face_image", imageFile);
+  }
+
+  fetch(updateUrl, {
+    method: "PATCH",
+    body: formData
+  })
+    .then(response => {
+      if (response.ok) {
+        alert("Student updated successfully!");
+        window.location.href = "studentDashboard.html";  // Redirect after update
+      } else {
+        alert("Update failed!");
+      }
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+</script>
+
+  </script>
+</body>
+</html>
