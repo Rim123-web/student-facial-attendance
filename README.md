@@ -1,12 +1,5 @@
-# student-facial-attendance
+## 🎓 student-facial-attendance
 This web application automates student attendance using facial recognition, providing secure login and tailored access for both students and teachers.
-
-
----
-
-## 🎓 Student Attendance Management System
-
-This web application helps automate student attendance using facial recognition, ensuring secure login and role-specific access for **students** and **teachers**.
 
 ---
 
