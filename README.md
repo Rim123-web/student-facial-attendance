@@ -52,7 +52,7 @@ MyProject = backend Django
 
 Frontend = Html , CSS , JS
 
-The student creates an account and mark his presence in a certain class or all the classes then the teacher logs in :
+The student creates an account and marks his presence in a certain class or all the classes then the teacher logs in :
 email : souzi@gmail.com 
 password :  123
 
