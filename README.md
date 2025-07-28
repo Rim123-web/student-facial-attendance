@@ -16,7 +16,7 @@ This web application automates student attendance using facial recognition, prov
 * **Face Recognition Attendance**
   Students can mark their presence by capturing a live image with their webcam, which is matched with their registration image.
 
-* **Attendance History (Rshift)**
+* **Attendance History **
   Students can view a **record of all the classes they were present in**.
 
 * **Profile Management**
@@ -47,6 +47,10 @@ This web application automates student attendance using facial recognition, prov
 * Role-based access control for students and teachers.
 
 ### To test :
+
+MyProject = backend Django
+
+Frontend = Html , CSS , JS
 
 The student creates an account and mark his presence in a certain class or all the classes then the teacher logs in :
 email : souzi@gmail.com 
